@@ -1,0 +1,52 @@
+<beans 
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  	xmlns:beans="http://www.springframework.org/schema/beans"
+  	xmlns:context="http://www.springframework.org/schema/context"
+  	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+  	xmlns:tx="http://www.springframework.org/schema/tx"
+  	xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans 
+    	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    	http://www.springframework.org/schema/tx 
+    	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+    	http://www.springframework.org/schema/mvc
+    	 http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+   
+  <mvc:annotation-driven />
+   
+  <context:component-scan base-package="br.com.myCompany"/>
+  
+  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/view/" />
+    <property name="suffix" value=".jsp" />
+  </bean>
+
+  <!-- todo alterar as credencias para o seu banco de dados -->
+  <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    <property name="url" value="jdbc:mysql://127.0.0.1:porta/database"/>
+    <property name="username" value="usuario"/>
+    <property name="password" value="senha"/>
+  </bean>
+   
+  <bean id="mySessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <property name="dataSource" ref="myDataSource"/>
+    <property name="packagesToScan">
+      <array>
+        <value>br.com.myCompany</value>
+      </array>
+    </property>
+    <property name="hibernateProperties">
+      <value>hibernate.dialect=org.hibernate.dialect.MySQLDialect</value>
+    </property>
+  </bean>
+   
+  <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    <property name="sessionFactory" ref="mySessionFactory"/>
+  </bean>
+   
+  <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
